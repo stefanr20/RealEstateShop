@@ -1,0 +1,42 @@
+﻿@model IEnumerable<RealEstate.BLL.Models.PropertyViewModel>
+
+@{
+    ViewData["Title"] = "Properties";
+}
+
+<h2>Properties</h2>
+<a asp-action="Create" class="btn btn-primary mb-3">Add New Property</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Price</th>
+            <th>City</th>
+            <th>Street</th>
+            <th>Country</th>
+            <th>Customer</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var property in Model)
+        {
+            <tr>
+                <td>@property.Title</td>
+                <td>@property.Description</td>
+                <td>@property.Price</td>
+                <td>@property.City</td>
+                <td>@property.Street</td>
+                <td>@property.Country</td>
+                <td>@property.FirstName @property.LastName</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@property.Id" class="btn btn-info btn-sm">Details</a>
+                    <a asp-action="Edit" asp-route-id="@property.Id" class="btn btn-warning btn-sm">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@property.Id" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

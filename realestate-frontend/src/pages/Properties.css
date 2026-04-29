@@ -1,0 +1,113 @@
+.properties-page {
+  padding: 60px;
+  max-width: 1300px;
+  margin: 0 auto;
+}
+
+.page-header {
+  margin-bottom: 50px;
+}
+
+.page-subtitle {
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: #8b6f5e;
+  text-transform: uppercase;
+  font-family: 'Segoe UI', sans-serif;
+  margin-bottom: 12px;
+}
+
+.page-title {
+  font-size: 42px;
+  font-weight: 700;
+  color: #2c1a0e;
+  font-family: 'Georgia', serif;
+}
+
+.properties-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 30px;
+}
+
+.property-card {
+  background-color: #ffffff;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #e8ddd4;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.property-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px rgba(44,26,14,0.1);
+}
+
+.property-image {
+  height: 220px;
+  background-color: #e8ddd4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-placeholder {
+  font-size: 60px;
+  opacity: 0.2;
+}
+
+.property-info {
+  padding: 24px;
+}
+
+.property-title {
+  color: #2c1a0e;
+  font-size: 18px;
+  font-family: 'Georgia', serif;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.property-description {
+  color: #8b6f5e;
+  font-size: 13px;
+  line-height: 1.7;
+  margin-bottom: 20px;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.property-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #f0e8e0;
+  padding-top: 16px;
+}
+
+.property-price {
+  color: #2c1a0e;
+  font-size: 18px;
+  font-weight: 700;
+  font-family: 'Georgia', serif;
+}
+
+.property-location {
+  color: #8b6f5e;
+  font-size: 12px;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.loading {
+  text-align: center;
+  padding: 100px;
+  color: #8b6f5e;
+  font-size: 14px;
+  letter-spacing: 2px;
+}
+
+.no-data {
+  text-align: center;
+  padding: 100px;
+  color: #8b6f5e;
+  font-size: 14px;
+}

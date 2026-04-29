@@ -1,0 +1,45 @@
+﻿@model IEnumerable<RealEstate.BLL.Models.PropertyViewModel>
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Real Estate Shop</h1>
+</div>
+
+<a asp-controller="Property" asp-action="Create" class="btn btn-primary mb-3">Add New Property</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Price</th>
+            <th>City</th>
+            <th>Street</th>
+            <th>Country</th>
+            <th>Customer</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var property in Model)
+        {
+            <tr>
+                <td>@property.Title</td>
+                <td>@property.Description</td>
+                <td>@property.Price</td>
+                <td>@property.City</td>
+                <td>@property.Street</td>
+                <td>@property.Country</td>
+                <td>@property.FirstName @property.LastName</td>
+                <td>
+                    <a asp-controller="Property" asp-action="Details" asp-route-id="@property.Id" class="btn btn-info btn-sm">Details</a>
+                    <a asp-controller="Property" asp-action="Edit" asp-route-id="@property.Id" class="btn btn-warning btn-sm">Edit</a>
+                    <a asp-controller="Property" asp-action="Delete" asp-route-id="@property.Id" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

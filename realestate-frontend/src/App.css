@@ -1,0 +1,15 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #f5ede4;
+  color: #2c1a0e;
+  font-family: 'Georgia', serif;
+}
+
+a {
+  text-decoration: none;
+}

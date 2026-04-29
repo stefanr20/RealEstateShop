@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="RealEstate.BLL/RealEstate.BLL.csproj" />
+  <Project Path="RealEstate.Data/RealEstate.Data.csproj" />
+  <Project Path="RealEstate.Domain/RealEstate.Domain.csproj" />
+  <Project Path="RealEstate.Tests/RealEstate.Tests.csproj" Id="65ace8cd-de7d-4262-9f53-5bad1a72abd8" />
+  <Project Path="RealEstateShop.WebApp/RealEstateShop.WebApp.csproj" Id="cf602a7f-3f9c-4ce5-92b6-090ce22f15f6" />
+</Solution>

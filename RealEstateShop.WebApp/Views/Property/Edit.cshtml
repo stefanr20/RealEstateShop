@@ -1,0 +1,34 @@
+﻿@* Edit.cshtml *@
+@model RealEstate.Domain.Entities.Property
+
+@{
+    ViewData["Title"] = "Edit Property";
+}
+
+<h2>Edit Property</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+    <div class="mb-3">
+        <label>Title</label>
+        <input asp-for="Title" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label>Description</label>
+        <input asp-for="Description" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label>Price</label>
+        <input asp-for="Price" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label>Address Id</label>
+        <input asp-for="AddressId" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label>Customer Id</label>
+        <input asp-for="CustomerId" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

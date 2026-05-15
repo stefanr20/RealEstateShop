@@ -1,0 +1,170 @@
+<div class="profile-page">
+
+  <div class="profile-header">
+    <div class="profile-header-inner">
+      <div class="profile-avatar">
+        {{ authService.currentUser()?.username?.charAt(0)?.toUpperCase() }}
+      </div>
+      <div class="profile-header-info">
+        <h1 class="profile-name">{{ authService.currentUser()?.username }}</h1>
+        <p class="profile-email">{{ authService.currentUser()?.email }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="profile-container">
+
+    <div class="profile-tabs">
+      <button class="tab-btn" [class.active]="activeTab() === 'profile'" (click)="setTab('profile')">
+        Profile Info
+      </button>
+      <button class="tab-btn" [class.active]="activeTab() === 'inquiries'" (click)="setTab('inquiries')">
+        My Inquiries
+      </button>
+      <button class="tab-btn" [class.active]="activeTab() === 'saved'" (click)="setTab('saved')">
+        Saved Searches
+      </button>
+      <button class="tab-btn" [class.active]="activeTab() === 'properties'" (click)="setTab('properties')">
+        Saved Properties
+      </button>
+    </div>
+
+    <!-- Profile Info Tab -->
+    <div class="tab-content" *ngIf="activeTab() === 'profile'">
+      <div class="section-header">
+        <h2 class="section-title">Profile Information</h2>
+        <p class="section-subtitle">Update your account details and password</p>
+      </div>
+
+      <div *ngIf="loading()" class="loading-text">Loading profile...</div>
+
+      <form *ngIf="!loading()" (ngSubmit)="saveProfile()" [formGroup]="profileForm" class="profile-form">
+        <div class="form-group">
+          <label class="form-label">USERNAME</label>
+          <input class="form-input" type="text" formControlName="username" placeholder="Your username" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">EMAIL</label>
+          <input class="form-input" type="email" formControlName="email" placeholder="Your email" />
+        </div>
+        <div class="form-divider">
+          <span>Change Password</span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">NEW PASSWORD</label>
+          <input class="form-input" type="password" formControlName="password" placeholder="Leave blank to keep current" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">CONFIRM NEW PASSWORD</label>
+          <input class="form-input" type="password" formControlName="confirmPassword" placeholder="Confirm new password" />
+        </div>
+        <div class="form-messages">
+          <p class="success-msg" *ngIf="successMessage()">{{ successMessage() }}</p>
+          <p class="error-msg" *ngIf="errorMessage()">{{ errorMessage() }}</p>
+        </div>
+        <button type="submit" class="btn-save" [disabled]="saving()">
+          {{ saving() ? 'Saving...' : 'Save Changes' }}
+        </button>
+      </form>
+    </div>
+
+    <!-- My Inquiries Tab -->
+    <div class="tab-content" *ngIf="activeTab() === 'inquiries'">
+      <div class="section-header">
+        <h2 class="section-title">My Inquiries</h2>
+        <p class="section-subtitle">All inquiries you have submitted</p>
+      </div>
+      <div *ngIf="inquiries().length === 0" class="empty-state">
+        <p class="empty-title">No inquiries yet</p>
+        <p class="empty-sub">When you send an inquiry about a property, it will appear here.</p>
+        <a routerLink="/" class="btn-browse">Browse Properties</a>
+      </div>
+      <div class="inquiries-list" *ngIf="inquiries().length > 0">
+        <div class="inquiry-card" *ngFor="let inquiry of inquiries()">
+          <div class="inquiry-top">
+            <span class="inquiry-property">
+              {{ inquiry.propertyTitle || 'General Inquiry' }}
+            </span>
+            <span class="inquiry-date">{{ formatDate(inquiry.createdAt) }}</span>
+          </div>
+          <p class="inquiry-message">{{ inquiry.message }}</p>
+          <a *ngIf="inquiry.propertyId" [routerLink]="['/property', inquiry.propertyId]" class="inquiry-link">
+            View Property →
+          </a>
+          <div class="inquiry-reply" *ngIf="inquiry.adminReply">
+            <span class="reply-label">Agent Reply</span>
+            <p class="reply-text">{{ inquiry.adminReply }}</p>
+            <span class="reply-date">{{ formatDate(inquiry.repliedAt) }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Saved Searches Tab -->
+    <div class="tab-content" *ngIf="activeTab() === 'saved'">
+      <div class="section-header">
+        <h2 class="section-title">Saved Searches</h2>
+        <p class="section-subtitle">Your saved search filters</p>
+      </div>
+      <div *ngIf="savedSearches().length === 0" class="empty-state">
+        <p class="empty-title">No saved searches yet</p>
+        <p class="empty-sub">Save a search on the home page to quickly find properties matching your criteria.</p>
+        <a routerLink="/" class="btn-browse">Start Searching</a>
+      </div>
+      <div class="saved-list" *ngIf="savedSearches().length > 0">
+        <div class="saved-card" *ngFor="let search of savedSearches(); let i = index">
+          <div class="saved-info">
+            <p class="saved-name">{{ search.name || 'Search ' + (i + 1) }}</p>
+            <div class="saved-tags">
+              <span class="tag" *ngIf="search.query">{{ search.query }}</span>
+              <span class="tag" *ngIf="search.type && search.type !== 'all'">{{ search.type }}</span>
+              <span class="tag" *ngIf="search.minPrice">From €{{ search.minPrice }}</span>
+              <span class="tag" *ngIf="search.maxPrice">To €{{ search.maxPrice }}</span>
+              <span class="tag" *ngIf="search.bedrooms && search.bedrooms !== 'any'">{{ search.bedrooms }}+ beds</span>
+            </div>
+          </div>
+          <div class="saved-actions">
+            <button class="btn-apply" (click)="applySearch(search)">Apply</button>
+            <button class="btn-remove" (click)="removeSavedSearch(i)">Remove</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Saved Properties Tab -->
+    <div class="tab-content" *ngIf="activeTab() === 'properties'">
+      <div class="section-header">
+        <h2 class="section-title">Saved Properties</h2>
+        <p class="section-subtitle">Properties you have saved to your favourites</p>
+      </div>
+      <div *ngIf="favoritesService.getFavorites()().length === 0" class="empty-state">
+        <p class="empty-title">No saved properties yet</p>
+        <p class="empty-sub">Click the ♥ on any property to save it here.</p>
+        <a routerLink="/" class="btn-browse">Browse Properties</a>
+      </div>
+      <div class="saved-props-grid" *ngIf="favoritesService.getFavorites()().length > 0">
+        <div class="saved-prop-card" *ngFor="let property of favoritesService.getFavorites()()">
+          <div class="saved-prop-img-wrap">
+            <img [src]="property.photo" [alt]="property.title" class="saved-prop-img">
+            <span class="saved-prop-type">{{ property.type }}</span>
+          </div>
+          <div class="saved-prop-info">
+            <h3 class="saved-prop-title">{{ property.title }}</h3>
+            <p class="saved-prop-location">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                <circle cx="12" cy="10" r="3"/>
+              </svg>
+              {{ property.address.city }}, {{ property.address.country }}
+            </p>
+            <div class="saved-prop-footer">
+              <span class="saved-prop-price">{{ property.price }}</span>
+              <a [routerLink]="['/property', property.id]" class="btn-view">View →</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

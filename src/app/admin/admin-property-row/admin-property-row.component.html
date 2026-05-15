@@ -1,0 +1,22 @@
+<td>
+  <div class="property-cell">
+    <img [src]="model.photo" [alt]="model.title" class="property-thumb">
+    <span class="property-name">{{ model.title }}</span>
+  </div>
+</td>
+<td><span class="type-badge">{{ model.type }}</span></td>
+<td class="muted">{{ model.address.city }}</td>
+<td class="price">{{ model.price }}</td>
+<td class="muted">{{ model.bedrooms }}</td>
+<td class="muted">{{ model.area }} m²</td>
+<td>
+  <span class="featured-badge" *ngIf="model.isFeatured">✦ Featured</span>
+  <span class="not-featured" *ngIf="!model.isFeatured">—</span>
+</td>
+<td>
+  <div class="action-btns">
+    <a [routerLink]="['/property', model.id]" class="btn-view" target="_blank">View</a>
+    <button class="btn-edit" (click)="onEdit()">Edit</button>
+    <button class="btn-delete" (click)="onDelete()">Delete</button>
+  </div>
+</td>

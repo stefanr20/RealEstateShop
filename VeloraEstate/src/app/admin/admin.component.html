@@ -1,0 +1,328 @@
+<div class="admin-page">
+
+  <!-- HEADER -->
+  <div class="admin-header">
+    <div class="admin-header-left">
+      <a routerLink="/" class="admin-back">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+          <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+        </svg>
+        Back to site
+      </a>
+      <div>
+        <h1 class="admin-title">Admin Panel</h1>
+        <p class="admin-sub">Manage your property listings</p>
+      </div>
+    </div>
+    <button class="btn-add" (click)="openAddForm()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16">
+        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+      Add Property
+    </button>
+  </div>
+
+ <!-- STATS -->
+<div class="admin-stats">
+  <card-c
+    *ngFor="let stat of stats"
+    [value]="stat.value"
+    [label]="stat.label">
+  </card-c>
+</div>
+
+  <!-- SEARCH -->
+  <div class="admin-toolbar">
+    <div class="admin-search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input type="text" placeholder="Search properties..." [(ngModel)]="searchQuery">
+    </div>
+    <span class="results-count">{{ filteredProperties.length }} properties</span>
+  </div>
+<!-- TABLE -->
+<div class="admin-table-wrap">
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>Property</th>
+        <th>Type</th>
+        <th>Location</th>
+        <th>Price</th>
+        <th>Beds</th>
+        <th>Area</th>
+        <th>Featured</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+  <tr app-property-row
+    *ngFor="let property of filteredProperties"
+    [model]="property"
+    (editProperty)="openEditForm($event)"
+    (deleteProperty)="confirmDelete($event)">
+  </tr>
+</tbody>
+  </table>
+</div>
+<!-- USERS SECTION -->
+<div class="users-section">
+  <div class="section-header-row">
+    <h2 class="admin-title" style="font-size: 22px;">User Management</h2>
+  </div>
+  <div class="admin-table-wrap">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Username</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of users">
+          <td class="muted">{{ user.id }}</td>
+          <td class="property-name">{{ user.username }}</td>
+          <td class="muted">{{ user.email }}</td>
+          <td>
+            <span class="featured-badge" *ngIf="user.role === 'admin'">Admin</span>
+            <span class="type-badge" *ngIf="user.role !== 'admin'">User</span>
+          </td>
+          <td>
+            <div class="action-btns">
+              <button class="btn-edit" *ngIf="user.role !== 'admin'" (click)="promoteUser(user.id)">Make Admin</button>
+              <button class="btn-delete" *ngIf="user.role === 'admin'" (click)="demoteUser(user.id)">Remove Admin</button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- INQUIRIES SECTION -->
+<div class="users-section">
+  <div class="section-header-row">
+    <h2 class="admin-title" style="font-size: 22px;">Inquiries</h2>
+  </div>
+  <div class="admin-table-wrap">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Property</th>
+          <th>Message</th>
+          <th>Date</th>
+          <th>Reply</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let inquiry of inquiries">
+          <td class="property-name">{{ inquiry.name }}</td>
+          <td class="muted">{{ inquiry.email }}</td>
+          <td class="muted">{{ inquiry.propertyTitle || '—' }}</td>
+          <td class="muted" style="max-width: 200px;">{{ inquiry.message }}</td>
+          <td class="muted">{{ formatDate(inquiry.createdAt) }}</td>
+          <td>
+            <div *ngIf="inquiry.adminReply" class="reply-sent">
+              ✓ {{ inquiry.adminReply }}
+            </div>
+            <div *ngIf="!inquiry.adminReply" class="reply-form">
+              <input
+                type="text"
+                class="reply-input"
+                placeholder="Type a reply..."
+                [(ngModel)]="replyTexts[inquiry.id]">
+              <button class="btn-reply" (click)="sendReply(inquiry.id)">Send</button>
+            </div>
+            <span class="reply-success" *ngIf="replySuccess[inquiry.id]">✓ Reply sent!</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+  <!-- DELETE CONFIRM MODAL -->
+  <div class="modal-overlay" *ngIf="deleteConfirmId !== null" (click)="cancelDelete()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <h3>Delete Property?</h3>
+      <p>This action cannot be undone. The property will be permanently removed.</p>
+      <div class="modal-actions">
+        <button class="btn-cancel" (click)="cancelDelete()">Cancel</button>
+        <button class="btn-confirm-delete" (click)="deleteProperty()">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD/EDIT FORM MODAL -->
+  <div class="modal-overlay" *ngIf="showForm" (click)="closeForm()">
+    <div class="modal modal-large" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>{{ editingId !== null ? 'Edit Property' : 'Add New Property' }}</h3>
+        <button class="modal-close" (click)="closeForm()">✕</button>
+      </div>
+
+      <form [formGroup]="propertyForm" (ngSubmit)="submitForm()" class="property-form">
+        <div class="form-grid">
+          <div class="form-field span-2">
+            <label>Title</label>
+            <input type="text" formControlName="title" placeholder="Property title">
+          </div>
+
+          <div class="form-field span-2">
+            <label>Description</label>
+            <textarea formControlName="description" rows="3" placeholder="Property description"></textarea>
+          </div>
+
+          <div class="form-field">
+            <label>Price</label>
+            <input type="text" formControlName="price" placeholder="€200,000">
+          </div>
+
+          <div class="form-field">
+            <label>Type</label>
+            <select formControlName="type">
+              <option value="apartment">Apartment</option>
+              <option value="house">House</option>
+              <option value="villa">Villa</option>
+              <option value="studio">Studio</option>
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label>Bedrooms</label>
+            <input type="number" formControlName="bedrooms" min="1">
+          </div>
+
+          <div class="form-field">
+            <label>Bathrooms</label>
+            <input type="number" formControlName="bathrooms" min="1">
+          </div>
+
+          <div class="form-field">
+            <label>Area (m²)</label>
+            <input type="number" formControlName="area" min="1">
+          </div>
+
+          <div class="form-field span-2">
+            <label>Photo URL</label>
+            <input type="text" formControlName="photo" placeholder="https://...">
+          </div>
+
+          <div class="form-field">
+            <label>City</label>
+            <input type="text" formControlName="city" placeholder="Skopje">
+          </div>
+
+          <div class="form-field">
+            <label>Street</label>
+            <input type="text" formControlName="street" placeholder="Ul. Makedonija 1">
+          </div>
+
+          <div class="form-field">
+            <label>Country</label>
+            <input type="text" formControlName="country">
+          </div>
+
+          <div class="form-field featured-field">
+            <label class="checkbox-label">
+              <input type="checkbox" formControlName="isFeatured">
+              Mark as Featured
+            </label>
+          </div>
+        </div>
+
+                <div class="form-field">
+          <label>Floor</label>
+          <input type="number" formControlName="floor" min="0">
+        </div>
+
+        <div class="form-field">
+          <label>Total Floors</label>
+          <input type="number" formControlName="totalFloors" min="1">
+        </div>
+
+        <div class="form-field">
+          <label>Year Built</label>
+          <input type="number" formControlName="yearBuilt" min="1900" max="2026">
+        </div>
+
+        <div class="form-field">
+          <label>Parking Spots</label>
+          <input type="number" formControlName="parkingSpots" min="0">
+        </div>
+
+        <div class="form-field">
+          <label>Heating Type</label>
+          <select formControlName="heatingType">
+            <option value="">None</option>
+            <option value="Central">Central</option>
+            <option value="Own">Own</option>
+            <option value="Electric">Electric</option>
+            <option value="Gas">Gas</option>
+          </select>
+        </div>
+
+        <div class="form-field featured-field">
+          <label class="checkbox-label">
+            <input type="checkbox" formControlName="hasGarage"> Garage
+          </label>
+        </div>
+
+        <div class="form-field featured-field">
+          <label class="checkbox-label">
+            <input type="checkbox" formControlName="hasElevator"> Elevator
+          </label>
+        </div>
+
+        <div class="form-field featured-field">
+          <label class="checkbox-label">
+            <input type="checkbox" formControlName="hasBalcony"> Balcony/Terrace
+          </label>
+        </div>
+
+        <div class="form-field featured-field">
+          <label class="checkbox-label">
+            <input type="checkbox" formControlName="hasPool"> Pool
+          </label>
+        </div>
+
+        <div class="form-field featured-field">
+          <label class="checkbox-label">
+            <input type="checkbox" formControlName="hasInternet"> Internet
+          </label>
+        </div>
+
+        <div class="form-field featured-field">
+          <label class="checkbox-label">
+            <input type="checkbox" formControlName="isFurnished"> Furnished
+          </label>
+        </div>
+
+        <div class="form-field featured-field">
+          <label class="checkbox-label">
+            <input type="checkbox" formControlName="hasAirConditioning"> Air Conditioning
+          </label>
+        </div>
+
+        <div class="form-field featured-field">
+          <label class="checkbox-label">
+            <input type="checkbox" formControlName="hasSecurity"> Security/Alarm
+          </label>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-cancel" (click)="closeForm()">Cancel</button>
+          <button type="submit" class="btn-save" [disabled]="propertyForm.invalid">
+            {{ editingId !== null ? 'Save Changes' : 'Add Property' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</div>

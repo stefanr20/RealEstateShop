@@ -1,0 +1,147 @@
+<section class="hero">
+  <div class="hero-content">
+    <p class="hero-eyebrow">Find Your Perfect Home</p>
+    <h1 class="hero-title">Discover Premium<br>Real Estate</h1>
+    <p class="hero-sub">Explore handpicked properties across Macedonia's most sought-after locations.</p>
+  </div>
+</section>
+
+<!-- SEARCH & FILTERS -->
+<section class="search-section">
+  <div class="search-bar">
+  <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+  </svg>
+  <input
+    type="text"
+    placeholder="Search by city, title or type..."
+    [(ngModel)]="searchQuery"
+    (keyup.enter)="applyFilters()"
+    class="search-input"
+  >
+</div>
+
+  <div class="filters-row">
+    <div class="filter-group">
+      <label class="filter-label">Type</label>
+      <select [(ngModel)]="filters.type" class="filter-select">
+        <option *ngFor="let t of propertyTypes" [value]="t">{{ t === 'all' ? 'All Types' : (t | titlecase) }}</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label class="filter-label">Min Price (€)</label>
+      <input type="number" [(ngModel)]="filters.minPrice" placeholder="No min" class="filter-input">
+    </div>
+
+    <div class="filter-group">
+      <label class="filter-label">Max Price (€)</label>
+      <input type="number" [(ngModel)]="filters.maxPrice" placeholder="No max" class="filter-input">
+    </div>
+
+    <div class="filter-group">
+      <label class="filter-label">Bedrooms</label>
+      <select [(ngModel)]="filters.bedrooms" class="filter-select">
+        <option *ngFor="let b of bedroomOptions" [value]="b">{{ b === 'any' ? 'Any' : b + '+' }}</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label class="filter-label">Sort By</label>
+      <select [(ngModel)]="sortOption" class="filter-select">
+        <option *ngFor="let s of sortOptions" [value]="s.value">{{ s.label }}</option>
+      </select>
+    </div>
+
+    <div class="filter-actions">
+  <button class="btn-search" (click)="applyFilters()">Search</button>
+  <button class="btn-clear" (click)="clearFilters()">Clear</button>
+  <button class="btn-save-search" (click)="saveSearch()" *ngIf="searchApplied">✦ Save this search</button>
+  <span class="search-saved-msg" *ngIf="searchSaved">✓ Saved!</span>
+</div>
+  </div>
+</section>
+
+<!-- FEATURED SECTION -->
+<section class="featured-section" *ngIf="!isLoading && featuredProperties.length > 0 && !showFavoritesOnly && !searchApplied">
+  <div class="section-header">
+    <h2 class="section-heading">✦ Featured Properties</h2>
+    <p class="section-sub">Handpicked premium listings</p>
+  </div>
+  <div class="featured-grid">
+    <app-property-card
+      *ngFor="let property of featuredProperties"
+      [property]="property">
+    </app-property-card>
+  </div>
+</section>
+
+<!-- RESULTS -->
+<section class="results-section" id="results">
+  <div class="results-header">
+    <div class="results-tabs">
+      <button class="tab-btn" [class.active]="!showFavoritesOnly" (click)="showFavoritesOnly = false">
+        All Properties
+        <span class="tab-count">{{ filteredProperties.length }}</span>
+      </button>
+      <button class="tab-btn" [class.active]="showFavoritesOnly" (click)="toggleFavoritesView()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+        </svg>
+        Saved
+        <span class="tab-count">{{ favCount }}</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- SKELETONS -->
+  <div class="properties-grid" *ngIf="isLoading">
+    <app-skeleton-card *ngFor="let s of skeletons"></app-skeleton-card>
+  </div>
+
+  <!-- EMPTY STATE -->
+  <div *ngIf="!isLoading && displayedProperties.length === 0" class="empty-state">
+    <p>{{ showFavoritesOnly ? 'No saved properties yet. Click the ♥ on any listing.' : 'No properties match your search.' }}</p>
+    <button class="btn-clear" (click)="clearFilters()" *ngIf="!showFavoritesOnly">Clear Filters</button>
+  </div>
+
+  <!-- GRID -->
+  <div class="properties-grid" *ngIf="!isLoading">
+    <app-property-card
+      *ngFor="let property of displayedProperties"
+      [property]="property">
+    </app-property-card>
+  </div>
+</section>
+
+<div class="pagination" *ngIf="totalPages > 1 && !isLoading && !showFavoritesOnly">
+  <button class="page-btn" (click)="prevPage()" [disabled]="currentPage === 1">
+    ← Prev
+  </button>
+  <span class="page-info">Page {{ currentPage }} of {{ totalPages }}</span>
+  <button class="page-btn" (click)="nextPage()" [disabled]="currentPage === totalPages">
+    Next →
+  </button>
+</div>
+
+<!-- NEWSLETTER SECTION -->
+<div class="newsletter-section">
+  <div class="newsletter-content">
+    <span class="newsletter-tag">BECOME A MEMBER</span>
+    <h2 class="newsletter-title">Early access, limited offers, and more —<br>straight to your inbox.</h2>
+    <div class="newsletter-form" *ngIf="!newsletterSubmitted">
+      <input
+        type="email"
+        [(ngModel)]="newsletterEmail"
+        placeholder="Email"
+        class="newsletter-input">
+      <button class="newsletter-btn" (click)="subscribe()">LET'S BE EXCLUSIVE</button>
+    </div>
+    <div class="newsletter-success" *ngIf="newsletterSubmitted">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+      You're in! Welcome to VeloraEstate.
+    </div>
+  </div>
+</div>

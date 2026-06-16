@@ -1,0 +1,76 @@
+<div class="contact-page">
+
+  <div class="contact-hero">
+    <span class="contact-tag">Contact Us</span>
+    <h1 class="contact-title">Get In Touch</h1>
+    <p class="contact-sub">Have a question about a property or want to list yours? We're here to help.</p>
+  </div>
+
+  <div class="contact-body">
+
+    <div class="contact-info">
+      <div class="info-card">
+        <div class="info-icon">📍</div>
+        <h3>Our Office</h3>
+        <p>Bul. Jane Sandanski 12<br>Skopje, Macedonia</p>
+      </div>
+      <div class="info-card">
+        <div class="info-icon">📞</div>
+        <h3>Phone</h3>
+        <p>+389 70 000 000<br>+389 2 000 0000</p>
+      </div>
+      <div class="info-card">
+        <div class="info-icon">✉️</div>
+        <h3>Email</h3>
+        <p>info@veloraestate.com<br>sales@veloraestate.com</p>
+      </div>
+      <div class="info-card">
+        <div class="info-icon">🕐</div>
+        <h3>Working Hours</h3>
+        <p>Mon - Fri: 9:00 - 18:00<br>Sat: 10:00 - 14:00</p>
+      </div>
+    </div>
+
+    <div class="contact-form-section">
+      <h2>Send Us a Message</h2>
+
+      <div *ngIf="submitted" class="success-msg">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+        <div>
+          <strong>Message sent!</strong>
+          <p>We'll get back to you within 24 hours.</p>
+        </div>
+      </div>
+
+      <form [formGroup]="contactForm" (ngSubmit)="submitForm()" *ngIf="!submitted" class="contact-form">
+        <div class="form-row">
+          <div class="form-field">
+            <label>Full Name</label>
+            <input type="text" formControlName="name" placeholder="John Doe">
+          </div>
+          <div class="form-field">
+            <label>Email</label>
+            <input type="email" formControlName="email" placeholder="john@example.com">
+          </div>
+        </div>
+        <div class="form-field">
+          <label>Phone <span class="optional">(optional)</span></label>
+          <input type="tel" formControlName="phone" placeholder="+389 70 000 000">
+        </div>
+        <div class="form-field">
+          <label>Subject</label>
+          <input type="text" formControlName="subject" placeholder="Property inquiry...">
+        </div>
+        <div class="form-field">
+          <label>Message</label>
+          <textarea formControlName="message" rows="5" placeholder="Tell us how we can help..."></textarea>
+        </div>
+        <button type="submit" class="submit-btn" [disabled]="contactForm.invalid">Send Message</button>
+      </form>
+    </div>
+
+  </div>
+
+</div>

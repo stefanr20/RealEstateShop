@@ -1,0 +1,116 @@
+.property-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.property-thumb {
+  width: 52px;
+  height: 36px;
+  object-fit: cover;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.property-name {
+  font-weight: 500;
+  color: var(--text);
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.type-badge {
+  background: var(--accent);
+  color: var(--accent-dark);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+.price {
+  font-weight: 600;
+  color: var(--text);
+  font-family: var(--font-display);
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.featured-badge {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent-dark);
+  background: var(--accent);
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+.not-featured {
+  color: #ddd;
+}
+
+.action-btns {
+  display: flex;
+  gap: 6px;
+}
+
+.btn-view,
+.btn-edit,
+.btn-delete {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  font-family: var(--font-body);
+  transition: opacity 0.2s;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-view {
+  background: #f0f0f0;
+  color: var(--text);
+}
+
+.btn-edit {
+  background: #e8f0fe;
+  color: #1a56db;
+}
+
+.btn-delete {
+  background: #fde8e8;
+  color: #c81e1e;
+}
+
+.btn-view:hover,
+.btn-edit:hover,
+.btn-delete:hover {
+  opacity: 0.75;
+}
+
+:host {
+  display: table-row;
+}
+
+:host td {
+  padding: 14px 20px;
+  font-size: 14px;
+  border-bottom: 1px solid #f8f8f8;
+  vertical-align: middle;
+}
+
+:host:last-child td {
+  border-bottom: none;
+}
+
+:host:hover td {
+  background: #fdfcfa;
+}

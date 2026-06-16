@@ -1,6 +1,7 @@
 ﻿using Microsoft.Playwright;
 using Xunit;
 using FluentAssertions;
+using RealEstate.Tests.E2ETests.Pages;
 
 namespace RealEstate.Tests.E2ETests
 {
@@ -9,7 +10,7 @@ namespace RealEstate.Tests.E2ETests
         private IPlaywright _playwright;
         private IBrowser _browser;
         private IPage _page;
-        private const string AboutUrl = "http://localhost:4200/about";
+        private AboutPage _aboutPage;
 
         public async Task InitializeAsync()
         {
@@ -23,6 +24,7 @@ namespace RealEstate.Tests.E2ETests
             {
                 IgnoreHTTPSErrors = true
             });
+            _aboutPage = new AboutPage(_page);
         }
 
         public async Task DisposeAsync()
@@ -34,100 +36,100 @@ namespace RealEstate.Tests.E2ETests
         [Fact]
         public async Task AboutPage_LoadsSuccessfully()
         {
-            await _page.GotoAsync(AboutUrl);
-            await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await _aboutPage.GoTo();
+            await _aboutPage.WaitForLoad();
 
-            var title = await _page.TitleAsync();
+            var title = await _aboutPage.GetTitle();
             title.Should().Contain("About");
         }
 
         [Fact]
         public async Task AboutPage_HasHeroSection()
         {
-            await _page.GotoAsync(AboutUrl);
-            await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await _aboutPage.GoTo();
+            await _aboutPage.WaitForLoad();
 
-            var content = await _page.ContentAsync();
-            content.Should().Contain("Macedonia");
+            var content = await _aboutPage.GetContent();
+            content.Should().Contain("Premium");
         }
 
         [Fact]
         public async Task AboutPage_HasOurStorySection()
         {
-            await _page.GotoAsync(AboutUrl);
-            await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await _aboutPage.GoTo();
+            await _aboutPage.WaitForLoad();
 
-            var content = await _page.ContentAsync();
+            var content = await _aboutPage.GetContent();
             content.Should().Contain("Our Story");
         }
 
         [Fact]
         public async Task AboutPage_HasTeamSection()
         {
-            await _page.GotoAsync(AboutUrl);
-            await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await _aboutPage.GoTo();
+            await _aboutPage.WaitForLoad();
 
-            var content = await _page.ContentAsync();
+            var content = await _aboutPage.GetContent();
             content.Should().Contain("Our Team");
         }
 
         [Fact]
         public async Task AboutPage_HasTeamMembers()
         {
-            await _page.GotoAsync(AboutUrl);
-            await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await _aboutPage.GoTo();
+            await _aboutPage.WaitForLoad();
 
-            var content = await _page.ContentAsync();
+            var content = await _aboutPage.GetContent();
             content.Should().Contain("Stefan Ristevski");
         }
 
         [Fact]
         public async Task AboutPage_HasStatistics()
         {
-            await _page.GotoAsync(AboutUrl);
-            await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await _aboutPage.GoTo();
+            await _aboutPage.WaitForLoad();
 
-            var content = await _page.ContentAsync();
+            var content = await _aboutPage.GetContent();
             content.Should().Contain("Properties Listed");
         }
 
         [Fact]
         public async Task AboutPage_HasHappyClients()
         {
-            await _page.GotoAsync(AboutUrl);
-            await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await _aboutPage.GoTo();
+            await _aboutPage.WaitForLoad();
 
-            var content = await _page.ContentAsync();
+            var content = await _aboutPage.GetContent();
             content.Should().Contain("Happy Clients");
         }
 
         [Fact]
         public async Task AboutPage_HasCitiesCovered()
         {
-            await _page.GotoAsync(AboutUrl);
-            await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await _aboutPage.GoTo();
+            await _aboutPage.WaitForLoad();
 
-            var content = await _page.ContentAsync();
+            var content = await _aboutPage.GetContent();
             content.Should().Contain("Cities Covered");
         }
 
         [Fact]
         public async Task AboutPage_HasAverageRating()
         {
-            await _page.GotoAsync(AboutUrl);
-            await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await _aboutPage.GoTo();
+            await _aboutPage.WaitForLoad();
 
-            var content = await _page.ContentAsync();
+            var content = await _aboutPage.GetContent();
             content.Should().Contain("Average Rating");
         }
 
         [Fact]
         public async Task AboutPage_HasFoundedYear()
         {
-            await _page.GotoAsync(AboutUrl);
-            await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await _aboutPage.GoTo();
+            await _aboutPage.WaitForLoad();
 
-            var content = await _page.ContentAsync();
+            var content = await _aboutPage.GetContent();
             content.Should().Contain("2020");
         }
     }

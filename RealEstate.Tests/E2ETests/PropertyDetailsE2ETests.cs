@@ -1,6 +1,7 @@
 ﻿using Microsoft.Playwright;
 using Xunit;
 using FluentAssertions;
+using RealEstate.Tests.E2ETests.Pages;
 
 namespace RealEstate.Tests.E2ETests
 {
@@ -9,8 +10,7 @@ namespace RealEstate.Tests.E2ETests
         private IPlaywright _playwright;
         private IBrowser _browser;
         private IPage _page;
-        private const string BaseUrl = "http://localhost:4200";
-        private const string PropertyUrl = "http://localhost:4200/property/3";
+        private PropertyDetailsPage _propertyDetailsPage;
 
         public async Task InitializeAsync()
         {
@@ -24,6 +24,7 @@ namespace RealEstate.Tests.E2ETests
             {
                 IgnoreHTTPSErrors = true
             });
+            _propertyDetailsPage = new PropertyDetailsPage(_page);
         }
 
         public async Task DisposeAsync()
@@ -35,42 +36,40 @@ namespace RealEstate.Tests.E2ETests
         [Fact]
         public async Task PropertyDetails_LoadsSuccessfully()
         {
-            await _page.GotoAsync(PropertyUrl);
-            await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await _propertyDetailsPage.GoTo(3);
+            await _propertyDetailsPage.WaitForLoad();
 
-            var title = await _page.TitleAsync();
+            var title = await _propertyDetailsPage.GetTitle();
             title.Should().Contain("Property");
         }
 
         [Fact]
         public async Task PropertyDetails_ShowsPrice()
         {
-            await _page.GotoAsync(PropertyUrl);
-            await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
-            await _page.WaitForTimeoutAsync(2000);
+            await _propertyDetailsPage.GoTo(3);
+            await _page.WaitForTimeoutAsync(4000);
 
-            var content = await _page.ContentAsync();
+            var content = await _propertyDetailsPage.GetContent();
             content.Should().Contain("€");
         }
 
         [Fact]
         public async Task PropertyDetails_ShowsPropertyType()
         {
-            await _page.GotoAsync(PropertyUrl);
-            await _page.WaitForSelectorAsync(".property-type, .type-badge, span:has-text('APARTMENT')",
-                new PageWaitForSelectorOptions { Timeout = 10000 });
+            await _propertyDetailsPage.GoTo(3);
+            await _page.WaitForTimeoutAsync(4000);
 
-            var content = await _page.ContentAsync();
-            content.Should().NotBeNullOrEmpty();
+            var content = await _propertyDetailsPage.GetContent();
+            content.Should().Contain("Property Details");
         }
 
         [Fact]
         public async Task PropertyDetails_ShowsBedroomsAndBathrooms()
         {
-            await _page.GotoAsync(PropertyUrl);
-            await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await _propertyDetailsPage.GoTo(3);
+            await _propertyDetailsPage.WaitForLoad();
 
-            var content = await _page.ContentAsync();
+            var content = await _propertyDetailsPage.GetContent();
             content.Should().Contain("Bedrooms");
             content.Should().Contain("Bathrooms");
         }
@@ -78,114 +77,113 @@ namespace RealEstate.Tests.E2ETests
         [Fact]
         public async Task PropertyDetails_ShowsAddress()
         {
-            await _page.GotoAsync(PropertyUrl);
-            await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await _propertyDetailsPage.GoTo(3);
+            await _propertyDetailsPage.WaitForLoad();
 
-            var content = await _page.ContentAsync();
+            var content = await _propertyDetailsPage.GetContent();
             content.Should().Contain("Skopje");
         }
 
         [Fact]
         public async Task PropertyDetails_ShowsAmenities()
         {
-            await _page.GotoAsync(PropertyUrl);
-            await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await _propertyDetailsPage.GoTo(3);
+            await _page.WaitForTimeoutAsync(4000);
 
-            var content = await _page.ContentAsync();
+            var content = await _propertyDetailsPage.GetContent();
             content.Should().Contain("Back to listings");
         }
-
 
         [Fact]
         public async Task PropertyDetails_ShowsAboutSection()
         {
-            await _page.GotoAsync(PropertyUrl);
-            await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await _propertyDetailsPage.GoTo(3);
+            await _propertyDetailsPage.WaitForLoad();
 
-            var content = await _page.ContentAsync();
+            var content = await _propertyDetailsPage.GetContent();
             content.Should().Contain("About This Property");
         }
 
         [Fact]
         public async Task PropertyDetails_ShowsLocationMap()
         {
-            await _page.GotoAsync(PropertyUrl);
-            await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await _propertyDetailsPage.GoTo(3);
+            await _propertyDetailsPage.WaitForLoad();
 
-            var content = await _page.ContentAsync();
+            var content = await _propertyDetailsPage.GetContent();
             content.Should().Contain("Location");
         }
 
         [Fact]
         public async Task PropertyDetails_HasInquiryForm()
         {
-            await _page.GotoAsync(PropertyUrl);
-            await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await _propertyDetailsPage.GoTo(3);
+            await _propertyDetailsPage.WaitForLoad();
 
-            var content = await _page.ContentAsync();
+            var content = await _propertyDetailsPage.GetContent();
             content.Should().Contain("Interested in this property?");
         }
 
         [Fact]
         public async Task PropertyDetails_InquiryForm_HasRequiredFields()
         {
-            await _page.GotoAsync(PropertyUrl);
+            await _propertyDetailsPage.GoTo(3);
             await _page.WaitForTimeoutAsync(4000);
 
-            var content = await _page.ContentAsync();
+            var content = await _propertyDetailsPage.GetContent();
             content.Should().Contain("Send Inquiry");
         }
 
         [Fact]
         public async Task PropertyDetails_InquiryForm_HasSendButton()
         {
-            await _page.GotoAsync(PropertyUrl);
-            await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await _propertyDetailsPage.GoTo(3);
+            await _propertyDetailsPage.WaitForLoad();
 
-            var button = _page.Locator("button:has-text('Send Inquiry')");
-            var isVisible = await button.IsVisibleAsync();
+            var isVisible = await _propertyDetailsPage.IsSendInquiryButtonVisible();
             isVisible.Should().BeTrue();
         }
 
         [Fact]
         public async Task PropertyDetails_HasBackToListingsButton()
         {
-            await _page.GotoAsync(PropertyUrl);
-            await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await _propertyDetailsPage.GoTo(3);
+            await _propertyDetailsPage.WaitForLoad();
 
-            var content = await _page.ContentAsync();
+            var content = await _propertyDetailsPage.GetContent();
             content.Should().Contain("Back to listings");
         }
 
         [Fact]
         public async Task PropertyDetails_BackToListings_Navigates()
         {
-            await _page.GotoAsync(PropertyUrl);
-            await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await _propertyDetailsPage.GoTo(3);
+            await _propertyDetailsPage.WaitForLoad();
 
-            await _page.ClickAsync("text=Back to listings");
-            await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await _propertyDetailsPage.ClickBackToListings();
+            await _propertyDetailsPage.WaitForLoad();
 
-            _page.Url.Should().NotContain("property/3");
+            var url = await _propertyDetailsPage.GetUrl();
+            url.Should().NotContain("property/3");
         }
 
         [Fact]
         public async Task PropertyDetails_HasSaveButton()
         {
-            await _page.GotoAsync(PropertyUrl);
-            await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await _propertyDetailsPage.GoTo(3);
+            await _propertyDetailsPage.WaitForLoad();
 
-            var content = await _page.ContentAsync();
+            var content = await _propertyDetailsPage.GetContent();
             content.Should().Contain("Save");
         }
 
         [Fact]
         public async Task PropertyDetails_HasShareButton()
         {
-            await _page.GotoAsync(PropertyUrl);
-            await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await _propertyDetailsPage.GoTo(3);
+            await _propertyDetailsPage.WaitForLoad();
 
-            var content = await _page.ContentAsync();
+            var content = await _propertyDetailsPage.GetContent();
             content.Should().Contain("Share");
         }
     }

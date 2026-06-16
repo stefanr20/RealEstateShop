@@ -1,6 +1,7 @@
 ﻿using Microsoft.Playwright;
 using Xunit;
 using FluentAssertions;
+using RealEstate.Tests.E2ETests.Pages;
 
 namespace RealEstate.Tests.E2ETests
 {
@@ -9,7 +10,8 @@ namespace RealEstate.Tests.E2ETests
         private IPlaywright _playwright;
         private IBrowser _browser;
         private IPage _page;
-        private const string BaseUrl = "http://localhost:4200";
+        private NavigationPage _navigationPage;
+        private HomePage _homePage;
 
         public async Task InitializeAsync()
         {
@@ -23,6 +25,8 @@ namespace RealEstate.Tests.E2ETests
             {
                 IgnoreHTTPSErrors = true
             });
+            _navigationPage = new NavigationPage(_page);
+            _homePage = new HomePage(_page);
         }
 
         public async Task DisposeAsync()
@@ -31,34 +35,33 @@ namespace RealEstate.Tests.E2ETests
             _playwright.Dispose();
         }
 
-        // HOME PAGE
         [Fact]
         public async Task HomePage_LoadsSuccessfully()
         {
-            await _page.GotoAsync(BaseUrl);
-            await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await _navigationPage.GoTo();
+            await _navigationPage.WaitForLoad();
 
-            var title = await _page.TitleAsync();
+            var title = await _navigationPage.GetTitle();
             title.Should().Contain("VeloraEstate");
         }
 
         [Fact]
         public async Task HomePage_HasHeroSection()
         {
-            await _page.GotoAsync(BaseUrl);
-            await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await _navigationPage.GoTo();
+            await _navigationPage.WaitForLoad();
 
-            var content = await _page.ContentAsync();
+            var content = await _navigationPage.GetContent();
             content.Should().Contain("Premium");
         }
 
         [Fact]
         public async Task HomePage_HasNavbar()
         {
-            await _page.GotoAsync(BaseUrl);
-            await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await _navigationPage.GoTo();
+            await _navigationPage.WaitForLoad();
 
-            var content = await _page.ContentAsync();
+            var content = await _navigationPage.GetContent();
             content.Should().Contain("VeloraEstate");
             content.Should().Contain("Properties");
         }
@@ -66,24 +69,23 @@ namespace RealEstate.Tests.E2ETests
         [Fact]
         public async Task HomePage_NavbarPropertiesLink_Works()
         {
-            await _page.GotoAsync(BaseUrl);
-            await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await _navigationPage.GoTo();
+            await _navigationPage.WaitForLoad();
 
-            await _page.ClickAsync("a:has-text('Properties')");
-            await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await _homePage.ClickPropertiesLink();
+            await _navigationPage.WaitForLoad();
 
-            var content = await _page.ContentAsync();
+            var content = await _navigationPage.GetContent();
             content.Should().NotBeNullOrEmpty();
         }
 
-        // SUBSCRIBER
         [Fact]
         public async Task Newsletter_TypeEmailAndSubmit()
         {
-            await _page.GotoAsync(BaseUrl);
-            await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await _homePage.GoTo();
+            await _homePage.WaitForLoad();
 
-            await _page.FillAsync("input[placeholder='Email']", "playwright@test.com");
+            await _homePage.FillNewsletterEmail("playwright@test.com");
             var value = await _page.InputValueAsync("input[placeholder='Email']");
             value.Should().Be("playwright@test.com");
         }
@@ -91,75 +93,70 @@ namespace RealEstate.Tests.E2ETests
         [Fact]
         public async Task Newsletter_SubscribeButton_IsVisible()
         {
-            await _page.GotoAsync(BaseUrl);
-            await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await _homePage.GoTo();
+            await _homePage.WaitForLoad();
 
-            var button = _page.Locator("button:has-text(\"LET'S BE EXCLUSIVE\")");
-            var isVisible = await button.IsVisibleAsync();
+            var isVisible = await _homePage.IsSubscribeButtonVisible();
             isVisible.Should().BeTrue();
         }
 
         [Fact]
         public async Task Newsletter_EmptyEmail_ButtonVisible()
         {
-            await _page.GotoAsync(BaseUrl);
-            await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await _homePage.GoTo();
+            await _homePage.WaitForLoad();
 
-            var content = await _page.ContentAsync();
+            var content = await _homePage.GetContent();
             content.Should().Contain("LET'S BE EXCLUSIVE");
         }
 
-        // CONTACT PAGE
         [Fact]
         public async Task ContactPage_HasContactInfo()
         {
-            await _page.GotoAsync($"{BaseUrl}/contact");
-            await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await _navigationPage.GoTo("contact");
+            await _navigationPage.WaitForLoad();
 
-            var content = await _page.ContentAsync();
+            var content = await _navigationPage.GetContent();
             content.Should().NotBeNullOrEmpty();
         }
 
-        // ABOUT PAGE
         [Fact]
         public async Task AboutPage_HasContent()
         {
-            await _page.GotoAsync($"{BaseUrl}/about");
-            await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await _navigationPage.GoTo("about");
+            await _navigationPage.WaitForLoad();
 
-            var content = await _page.ContentAsync();
+            var content = await _navigationPage.GetContent();
             content.Should().NotBeNullOrEmpty();
         }
 
-        // 404 PAGE
         [Fact]
         public async Task UnknownPage_Shows404()
         {
-            await _page.GotoAsync($"{BaseUrl}/nonexistentpage");
-            await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await _navigationPage.GoTo("nonexistentpage");
+            await _navigationPage.WaitForLoad();
 
-            var content = await _page.ContentAsync();
+            var content = await _navigationPage.GetContent();
             content.Should().Contain("404");
         }
 
-        // TERMS AND PRIVACY
         [Fact]
         public async Task TermsPage_LoadsSuccessfully()
         {
-            await _page.GotoAsync($"{BaseUrl}/terms");
-            await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await _navigationPage.GoTo("terms");
+            await _navigationPage.WaitForLoad();
 
-            var content = await _page.ContentAsync();
+            var content = await _navigationPage.GetContent();
             content.Should().NotBeNullOrEmpty();
         }
 
         [Fact]
         public async Task PrivacyPage_LoadsSuccessfully()
         {
-            await _page.GotoAsync($"{BaseUrl}/privacy");
-            await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await _navigationPage.GoTo("privacy");
+            await _navigationPage.WaitForLoad();
 
-            var content = await _page.ContentAsync();
+            var content = await _navigationPage.GetContent();
             content.Should().NotBeNullOrEmpty();
         }
     }

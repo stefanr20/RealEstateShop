@@ -1,6 +1,7 @@
 ﻿using Microsoft.Playwright;
 using Xunit;
 using FluentAssertions;
+using RealEstate.Tests.E2ETests.Pages;
 
 namespace RealEstate.Tests.E2ETests
 {
@@ -9,7 +10,9 @@ namespace RealEstate.Tests.E2ETests
         private IPlaywright _playwright;
         private IBrowser _browser;
         private IPage _page;
-        private const string BaseUrl = "http://localhost:4200";
+        private HomePage _homePage;
+        private AboutPage _aboutPage;
+        private ContactPage _contactPage;
 
         public async Task InitializeAsync()
         {
@@ -23,6 +26,9 @@ namespace RealEstate.Tests.E2ETests
             {
                 IgnoreHTTPSErrors = true
             });
+            _homePage = new HomePage(_page);
+            _aboutPage = new AboutPage(_page);
+            _contactPage = new ContactPage(_page);
         }
 
         public async Task DisposeAsync()
@@ -34,60 +40,60 @@ namespace RealEstate.Tests.E2ETests
         [Fact]
         public async Task HomePage_HasNewsletterSection()
         {
-            await _page.GotoAsync(BaseUrl);
-            await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await _homePage.GoTo();
+            await _homePage.WaitForLoad();
 
-            var content = await _page.ContentAsync();
+            var content = await _homePage.GetContent();
             content.Should().Contain("BECOME A MEMBER");
         }
 
         [Fact]
         public async Task HomePage_NewsletterHasEmailInput()
         {
-            await _page.GotoAsync(BaseUrl);
-            await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await _homePage.GoTo();
+            await _homePage.WaitForLoad();
 
-            var content = await _page.ContentAsync();
+            var content = await _homePage.GetContent();
             content.Should().Contain("Email");
         }
 
         [Fact]
         public async Task HomePage_NewsletterHasSubscribeButton()
         {
-            await _page.GotoAsync(BaseUrl);
-            await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await _homePage.GoTo();
+            await _homePage.WaitForLoad();
 
-            var content = await _page.ContentAsync();
-            content.Should().Contain("LET'S BE EXCLUSIVE");
+            var isVisible = await _homePage.IsSubscribeButtonVisible();
+            isVisible.Should().BeTrue();
         }
 
         [Fact]
         public async Task ContactPage_LoadsSuccessfully()
         {
-            await _page.GotoAsync($"{BaseUrl}/contact");
-            await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await _contactPage.GoTo();
+            await _contactPage.WaitForLoad();
 
-            var content = await _page.ContentAsync();
+            var content = await _contactPage.GetContent();
             content.Should().NotBeNullOrEmpty();
         }
 
         [Fact]
         public async Task AboutPage_LoadsSuccessfully()
         {
-            await _page.GotoAsync($"{BaseUrl}/about");
-            await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await _aboutPage.GoTo();
+            await _aboutPage.WaitForLoad();
 
-            var content = await _page.ContentAsync();
+            var content = await _aboutPage.GetContent();
             content.Should().NotBeNullOrEmpty();
         }
 
         [Fact]
         public async Task Footer_HasNavigationLinks()
         {
-            await _page.GotoAsync(BaseUrl);
-            await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await _homePage.GoTo();
+            await _homePage.WaitForLoad();
 
-            var content = await _page.ContentAsync();
+            var content = await _homePage.GetContent();
             content.Should().Contain("Properties");
             content.Should().Contain("About Us");
             content.Should().Contain("Contact");
@@ -96,10 +102,10 @@ namespace RealEstate.Tests.E2ETests
         [Fact]
         public async Task Footer_HasLegalLinks()
         {
-            await _page.GotoAsync(BaseUrl);
-            await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await _homePage.GoTo();
+            await _homePage.WaitForLoad();
 
-            var content = await _page.ContentAsync();
+            var content = await _homePage.GetContent();
             content.Should().Contain("Terms");
             content.Should().Contain("Privacy");
         }
@@ -107,10 +113,10 @@ namespace RealEstate.Tests.E2ETests
         [Fact]
         public async Task Footer_HasContactInfo()
         {
-            await _page.GotoAsync(BaseUrl);
-            await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await _homePage.GoTo();
+            await _homePage.WaitForLoad();
 
-            var content = await _page.ContentAsync();
+            var content = await _homePage.GetContent();
             content.Should().Contain("Skopje");
         }
     }

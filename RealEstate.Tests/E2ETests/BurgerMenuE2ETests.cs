@@ -1,6 +1,7 @@
 ﻿using Microsoft.Playwright;
 using Xunit;
 using FluentAssertions;
+using RealEstate.Tests.E2ETests.Pages;
 
 namespace RealEstate.Tests.E2ETests
 {
@@ -9,7 +10,8 @@ namespace RealEstate.Tests.E2ETests
         private IPlaywright _playwright;
         private IBrowser _browser;
         private IPage _page;
-        private const string BaseUrl = "http://localhost:4200";
+        private NavigationPage _navigationPage;
+        private HomePage _homePage;
 
         public async Task InitializeAsync()
         {
@@ -23,6 +25,8 @@ namespace RealEstate.Tests.E2ETests
             {
                 IgnoreHTTPSErrors = true
             });
+            _navigationPage = new NavigationPage(_page);
+            _homePage = new HomePage(_page);
         }
 
         public async Task DisposeAsync()
@@ -34,79 +38,78 @@ namespace RealEstate.Tests.E2ETests
         [Fact]
         public async Task BurgerMenu_Opens_WhenClicked()
         {
-            await _page.GotoAsync(BaseUrl);
-            await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await _homePage.GoTo();
+            await _homePage.WaitForLoad();
 
-            await _page.ClickAsync("button.burger-btn");
-            await _page.WaitForTimeoutAsync(500);
+            await _homePage.OpenBurgerMenu();
+            await _navigationPage.WaitForTimeout(500);
 
-            var menuPanel = _page.Locator(".menu-panel");
-            var isVisible = await menuPanel.IsVisibleAsync();
-            isVisible.Should().BeTrue();
+            var isOpen = await _navigationPage.IsBurgerMenuOpen();
+            isOpen.Should().BeTrue();
         }
 
         [Fact]
         public async Task BurgerMenu_HasPropertiesLink()
         {
-            await _page.GotoAsync(BaseUrl);
-            await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await _homePage.GoTo();
+            await _homePage.WaitForLoad();
 
-            await _page.ClickAsync("button.burger-btn");
-            await _page.WaitForTimeoutAsync(500);
+            await _homePage.OpenBurgerMenu();
+            await _navigationPage.WaitForTimeout(500);
 
-            var content = await _page.ContentAsync();
+            var content = await _navigationPage.GetContent();
             content.Should().Contain("Properties");
         }
 
         [Fact]
         public async Task BurgerMenu_HasAboutUsLink()
         {
-            await _page.GotoAsync(BaseUrl);
-            await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await _homePage.GoTo();
+            await _homePage.WaitForLoad();
 
-            await _page.ClickAsync("button.burger-btn");
-            await _page.WaitForTimeoutAsync(500);
+            await _homePage.OpenBurgerMenu();
+            await _navigationPage.WaitForTimeout(500);
 
-            var content = await _page.ContentAsync();
+            var content = await _navigationPage.GetContent();
             content.Should().Contain("About Us");
         }
 
         [Fact]
         public async Task BurgerMenu_HasContactLink()
         {
-            await _page.GotoAsync(BaseUrl);
-            await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await _homePage.GoTo();
+            await _homePage.WaitForLoad();
 
-            await _page.ClickAsync("button.burger-btn");
-            await _page.WaitForTimeoutAsync(500);
+            await _homePage.OpenBurgerMenu();
+            await _navigationPage.WaitForTimeout(500);
 
-            var content = await _page.ContentAsync();
+            var content = await _navigationPage.GetContent();
             content.Should().Contain("Contact");
         }
 
         [Fact]
         public async Task BurgerMenu_HasMyProfileLink()
         {
-            await _page.GotoAsync(BaseUrl);
-            await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await _homePage.GoTo();
+            await _homePage.WaitForLoad();
 
-            await _page.ClickAsync("button.burger-btn");
-            await _page.WaitForTimeoutAsync(500);
+            await _homePage.OpenBurgerMenu();
+            await _navigationPage.WaitForTimeout(500);
 
-            var content = await _page.ContentAsync();
+            var content = await _navigationPage.GetContent();
             content.Should().Contain("VeloraEstate");
         }
 
         [Fact]
         public async Task BurgerMenu_HasLanguageSwitcher()
         {
-            await _page.GotoAsync(BaseUrl);
-            await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await _homePage.GoTo();
+            await _homePage.WaitForLoad();
 
-            await _page.ClickAsync("button.burger-btn");
-            await _page.WaitForTimeoutAsync(500);
+            await _homePage.OpenBurgerMenu();
+            await _navigationPage.WaitForTimeout(500);
 
-            var content = await _page.ContentAsync();
+            var content = await _navigationPage.GetContent();
             content.Should().Contain("EN");
             content.Should().Contain("MK");
         }
@@ -114,27 +117,26 @@ namespace RealEstate.Tests.E2ETests
         [Fact]
         public async Task BurgerMenu_HasSocialLinks()
         {
-            await _page.GotoAsync(BaseUrl);
-            await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await _homePage.GoTo();
+            await _homePage.WaitForLoad();
 
-            await _page.ClickAsync("button.burger-btn");
-            await _page.WaitForTimeoutAsync(500);
+            await _homePage.OpenBurgerMenu();
+            await _navigationPage.WaitForTimeout(500);
 
-            var socialLinks = _page.Locator(".menu-social");
-            var isVisible = await socialLinks.IsVisibleAsync();
+            var isVisible = await _navigationPage.IsSocialLinksVisible();
             isVisible.Should().BeTrue();
         }
 
         [Fact]
         public async Task BurgerMenu_Closes_WhenXClicked()
         {
-            await _page.GotoAsync(BaseUrl);
-            await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await _homePage.GoTo();
+            await _homePage.WaitForLoad();
 
-            await _page.ClickAsync("button.burger-btn");
-            await _page.WaitForTimeoutAsync(500);
-            await _page.ClickAsync("button.menu-close");
-            await _page.WaitForTimeoutAsync(500);
+            await _homePage.OpenBurgerMenu();
+            await _navigationPage.WaitForTimeout(500);
+            await _homePage.CloseBurgerMenu();
+            await _navigationPage.WaitForTimeout(500);
 
             var menuPanel = _page.Locator(".menu-panel.open");
             var count = await menuPanel.CountAsync();
